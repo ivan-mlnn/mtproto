@@ -131,7 +131,7 @@ func (m *MTProto) Connect() error {
 	case TL_config:
 		m.dclist = make(map[int32]string, 5)
 		for _, v := range x.(TL_config).dc_options {
-			v := v.(TL_dcOption)
+			// v := v.(TL_dcOption)
 			m.dclist[v.id] = fmt.Sprintf("%s:%d", v.ip_address, v.port)
 		}
 	default:
@@ -185,7 +185,7 @@ func (m *MTProto) Auth(phonenumber string) error {
 	flag := true
 	for flag {
 		resp := make(chan TL, 1)
-		m.queueSend <- packetToSend{TL_auth_sendCode{phonenumber, 0, appId, appHash, "en"}, resp}
+		m.queueSend <- packetToSend{TL_auth_sendCode{0, false, phonenumber, false, appId, appHash}, resp}
 		x := <-resp
 		switch x.(type) {
 		case TL_auth_sentCode:
@@ -224,7 +224,7 @@ func (m *MTProto) Auth(phonenumber string) error {
 	fmt.Print("Enter code: ")
 	fmt.Scanf("%d", &code)
 
-	if toBool(authSentCode.phone_registered) {
+	if authSentCode.phone_registered {
 		resp := make(chan TL, 1)
 		m.queueSend <- packetToSend{
 			TL_auth_signIn{phonenumber, authSentCode.phone_code_hash, fmt.Sprintf("%d", code)},
@@ -235,7 +235,7 @@ func (m *MTProto) Auth(phonenumber string) error {
 		if !ok {
 			return fmt.Errorf("RPC: %#v", x)
 		}
-		userSelf := auth.user.(TL_userSelf)
+		userSelf := auth.user //.(TL_userSelf)
 		fmt.Printf("Signed in: id %d name <%s %s>\n", userSelf.id, userSelf.first_name, userSelf.last_name)
 
 	} else {

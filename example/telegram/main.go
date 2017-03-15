@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/sdidyk/mtproto"
+	"github.com/ivan-mlnn/mtproto"
 )
 
 func usage() {
